@@ -5,14 +5,16 @@ class FeedbackController {
 
     static async create(req, res) {
         try {
-            const { receiverId, message, categoryId } = req.body;
+            const { message } = req.body;
+            const receiverId = Number(req.body.receiverId);
+            const categoryId = Number(req.body.categoryId);
 
             // Validasi data terlebih dahulu
             if (!receiverId || !message || !categoryId) {
                 return res.status(400).json(response(400, 'Data tidak lengkap'));
             }
 
-            const feedbacks = await Feedback.create({
+            const feedback = await Feedback.create({
                 senderId: req.user.id,
                 receiverId,
                 message,
@@ -21,7 +23,7 @@ class FeedbackController {
                 status: 'pending'
             });
 
-            return res.status(201).json(response(201, 'Feedback berhasil dikirim', feedbacks));
+            return res.status(201).json(response(201, 'Feedback berhasil dikirim', feedback));
 
         } catch (error) {
             return res.status(500).json(response(500, error.message));
