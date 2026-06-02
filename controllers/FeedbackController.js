@@ -1,5 +1,6 @@
 const { Feedback } = require('../models');
 const response = require('../helpers/response');
+const { sequelize } = require('../models');
 
 class FeedbackController {
 
@@ -60,51 +61,70 @@ class FeedbackController {
     }
 
     static async approve(req, res) {
+
+        const t = await sequelize.transaction();
+
         try {
-            const feedbacks = await Feedback.findByPk(req.params.id);
+            const { id } = req.params;
+
+            const feedbacks = await Feedback.findByPk(id);
 
             if (!feedbacks) {
-                return res.status(404).json(
-                    response(404, 'Feedback tidak ditemukan')
-                );
+                await t.rollback();
+                return res.status(404).json(response(404, 'Feedback tidak ditemukan'));
             }
 
             if (feedbacks.status !== 'pending') {
-                return res.status(400).json(
-                    response(400, 'Feedback sudah di proses')
-                )
+                await t.rollback();
+                return res.status(400).json(response(400, 'Feedback sudah di proses'))
             }
 
-            feedbacks.status = 'approved';
-            await feedbacks.save();
-
-            return res.status(200).json(
-                response(200, 'Feedback sudah di proses', feedbacks)
+            await feedbacks.update(
+                { status: 'approved' },
+                { transaction: t }
             );
 
+            await t.commit();
+
+            return res.status(200).json(response(200, 'Feedback sudah di proses', feedbacks));
+
         } catch (error) {
+            await t.rollback()
             return res.status(500).json(response(500, error.message));
         }
     }
 
     static async reject(req, res) {
+
+        const t = await sequelize.transaction();
+
         try {
             const feedbacks = await Feedback.findByPk(req.params.id);
 
             if(!feedbacks) {
 
+                await t.rollback();
                 return res.status(404).json(response(404, 'Feedback tidak ditemukan'));
+
             }
 
             if(feedbacks.status !== 'pending') {
+                await t.rollback();
                 return res.status(400).json(response(400, 'Feedback sudah di proses'));
+
             }
 
-            feedbacks.status = 'rejected';
-            await feedbacks.save();
+            await feedback.update(
+                { status: 'rejected' },
+                { transaction: t }
+            );
+
+            await t.commit();
 
             return res.status(200).json(response(200, 'Feedback ditolak', feedbacks));
+
         } catch (error) {
+            await t.rollback()
             return res.status(500).json(response(500, error.message));
         }
     }
