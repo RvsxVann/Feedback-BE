@@ -5,7 +5,7 @@ const sequelize = require('../config/base');
 
 class User extends Model {
     static associate(models) {
-        
+
         User.hasMany(models.Feedback, {
             foreignKey : 'senderId',
             as: 'sentFeedbacks',
@@ -36,7 +36,7 @@ class User extends Model {
             },
             
             role: {
-                type: DataTypes.ENUM('student', 'teacher'),
+                type: DataTypes.ENUM('student', 'teacher', 'admin'),
                 defaultValue: 'student'
             },
         },

@@ -9,14 +9,10 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json(response(401, 'Token tidak ditemukan'));
     }
 
-    console.log('AUTH:', authHeader);
-    
     const token = authHeader.split(' ')[1];
 
 
     try {
-
-        console.log('TOKEN', token);
 
         const decoded = jwt.verify(
             token,
