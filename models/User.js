@@ -22,22 +22,24 @@ class User extends Model {
         {
             name: {
                 type: DataTypes.STRING,
-                allowNULL: false
+                allowNull: false
             },
 
             email: {
                 type: DataTypes.STRING,
-                allowNULL: false
+                allowNull: false,
+                unique: true
             },
 
             password: {
                 type: DataTypes.STRING,
-                allowNULL:false
+                allowNull: false
             },
             
             role: {
                 type: DataTypes.ENUM('student', 'teacher', 'admin'),
-                defaultValue: 'student'
+                defaultValue: 'student',
+                allowNull: false
             },
         },
         {

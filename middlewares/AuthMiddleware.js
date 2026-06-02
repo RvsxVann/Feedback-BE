@@ -24,8 +24,7 @@ const verifyToken = (req, res, next) => {
         next();
 
     } catch(error) {
-        console.log(error.message);
-
+        
         return res.status(401).json(response(401, 'Token tidak valid'));
     }
 };

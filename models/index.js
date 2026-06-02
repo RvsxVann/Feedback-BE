@@ -12,8 +12,13 @@ User.hasMany(Feedback, {
 });
 
 Feedback.belongsTo(User, {
-    foreginKey: 'receiverId',
+    foreignKey: 'receiverId',
     as : 'receiver'
+});
+
+Feedback.belongsTo(User, {
+    foreignKey: 'senderId',
+    as : 'sender'
 });
 
 module.exports = {

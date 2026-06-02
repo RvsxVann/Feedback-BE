@@ -21,7 +21,7 @@ Feedback.init (
     {
         message: {
             type: DataTypes.TEXT,
-            allowNullL: false
+            allowNull: false
         },
 
         category: {
@@ -45,12 +45,20 @@ Feedback.init (
         
         senderId : {
             type: DataTypes.INTEGER,
-            allowNull : false
+            allowNull : false,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
         },
 
         receiverId : {
             type: DataTypes.INTEGER,
-            allowNull : false
+            allowNull : false,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
         }
     },
     {

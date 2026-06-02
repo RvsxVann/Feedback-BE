@@ -7,7 +7,18 @@ class UserController {
         try {
             const { name, email, password } = req.body;
 
+            // Validasi data terlebih dahulu
+            if (!name || !email || !password) {
+                return res.status(400).json(response(400, 'Data tidak lengkap'));
+            }
+
             const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Check if email already exists
+            const existingUser = await User.findOne({ where: { email } });
+            if (existingUser) {
+                return res.status(409).json(response(409, 'Email sudah digunakan'));
+            }
 
             const teacher = await User.create({
                 name,

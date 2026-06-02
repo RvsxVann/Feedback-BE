@@ -9,9 +9,12 @@ class AuthController {
     static async register(req, res) {
         try {
 
-            console.log('BODY:', req.body);
-
             const { name, email, password } = req.body;
+
+            // Validasi data terlebih dahulu
+            if (!name || !email || !password) {
+                return res.status(400).json(response(400, 'Data tidak lengkap'));
+            }
 
             const existingUser = await User.findOne({
                 where: { email }
@@ -51,6 +54,11 @@ class AuthController {
         try {
 
             const { email, password } = req.body;
+
+            // Validasi data terlebih dahulu
+            if (!email || !password) {
+                return res.status(400).json(response(400, 'Email dan password wajib diisi'));
+            }
 
             const user = await User.findOne({
                 where: { email }

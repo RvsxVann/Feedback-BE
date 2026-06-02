@@ -7,6 +7,11 @@ class FeedbackController {
         try {
             const { receiverId, message, category } = req.body;
 
+            // Validasi data terlebih dahulu
+            if (!receiverId || !message || !category) {
+                return res.status(400).json(response(400, 'Data tidak lengkap'));
+            }
+
             const feedbacks = await Feedback.create({
                 senderId: req.user.id,
                 receiverId,
@@ -15,9 +20,7 @@ class FeedbackController {
                 status: 'pending'
             });
 
-            return res.status(201).json(
-                response(201, 'Feedback berhasil dikirim', feedbacks)
-            );
+            return res.status(201).json(response(201, 'Feedback berhasil dikirim', feedbacks));
 
         } catch (error) {
             return res.status(500).json(response(500, error.message));
@@ -85,17 +88,17 @@ class FeedbackController {
         try {
             const feedbacks = await Feedback.findByPk(req.params.id);
 
-            if(!feedback) {
+            if(!feedbacks) {
 
                 return res.status(404).json(response(404, 'Feedback tidak ditemukan'));
             }
 
-            if(feedback.status !== 'pending') {
+            if(feedbacks.status !== 'pending') {
                 return res.status(400).json(response(400, 'Feedback sudah di proses'));
             }
 
-            feedback.status = 'rejected';
-            await feedback.save();
+            feedbacks.status = 'rejected';
+            await feedbacks.save();
 
             return res.status(200).json(response(200, 'Feedback ditolak', feedbacks));
         } catch (error) {
