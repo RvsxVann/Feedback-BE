@@ -69,7 +69,7 @@ class FeedbackController {
         try {
             const { id } = req.params;
 
-            const feedbacks = await Feedback.findByPk(id);
+            const feedbacks = await Feedback.findByPk(id)
 
             if (!feedbacks) {
                 await t.rollback();
