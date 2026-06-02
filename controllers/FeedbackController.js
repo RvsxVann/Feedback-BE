@@ -17,6 +17,7 @@ class FeedbackController {
                 receiverId,
                 message,
                 category,
+                attachment: req.file ? req.file.filename : null,
                 status: 'pending'
             });
 

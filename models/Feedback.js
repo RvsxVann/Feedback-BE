@@ -59,6 +59,11 @@ Feedback.init (
                 model: 'users',
                 key: 'id'
             }
+        },
+
+        attachment : {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     },
     {

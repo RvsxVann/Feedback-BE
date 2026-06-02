@@ -3,11 +3,14 @@ const router = express.Router();
 
 const FeedbackController = require('../controllers/FeedbackController');
 const verifyToken = require('../middlewares/AuthMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware')
+const roleMiddleware = require('../middlewares/roleMiddleware');
+const upload = require('../middlewares/uploadMiddleware')
+
 
 router.post(
     '/',
     verifyToken,
+    upload.single('file'),
     FeedbackController.create
 );
 
