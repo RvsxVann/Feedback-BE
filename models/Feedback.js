@@ -14,6 +14,10 @@ class Feedback extends Model {
             foreignKey: 'receiverId',
             as: 'receiver'
         });
+
+        Feedback.belongsTo(models.Category, {
+            foreignKey: 'categoryId'
+        })
     }
 }
 
@@ -24,14 +28,10 @@ Feedback.init (
             allowNull: false
         },
 
-        category: {
-            type: DataTypes.ENUM(
-                'communication',
-                'discipline',
-                'teamwork',
-                'attitude'
-            ),
+        categoryId: {
+            type: DataTypes.INTEGER,
             allowNull : false
+
         },
 
         status : {
@@ -64,6 +64,11 @@ Feedback.init (
         attachment : {
             type: DataTypes.STRING,
             allowNull: true
+        },
+
+        categoryId : {
+            type: DataTypes.INTEGER,
+            allowNull : false
         }
     },
     {

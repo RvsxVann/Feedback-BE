@@ -5,10 +5,10 @@ class FeedbackController {
 
     static async create(req, res) {
         try {
-            const { receiverId, message, category } = req.body;
+            const { receiverId, message, categoryId } = req.body;
 
             // Validasi data terlebih dahulu
-            if (!receiverId || !message || !category) {
+            if (!receiverId || !message || !categoryId) {
                 return res.status(400).json(response(400, 'Data tidak lengkap'));
             }
 
@@ -16,7 +16,7 @@ class FeedbackController {
                 senderId: req.user.id,
                 receiverId,
                 message,
-                category,
+                categoryId,
                 attachment: req.file ? req.file.filename : null,
                 status: 'pending'
             });
