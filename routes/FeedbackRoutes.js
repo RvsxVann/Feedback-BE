@@ -48,4 +48,18 @@ router.get(
     FeedbackController.stats
 )
 
+router.get(
+    '/export/pdf',
+    verifyToken,
+    roleMiddleware(['admin']),
+    FeedbackController.exportPDF
+)
+
+router.get(
+    '/export/excel',
+    verifyToken,
+    roleMiddleware(['admin']),
+    FeedbackController.exportExcel
+)
+
 module.exports = router;

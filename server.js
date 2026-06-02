@@ -3,11 +3,12 @@ require('./models')
 
 const app = require('./app')
 const sequelize = require('./config/base');
+const db = require('./models')
 
 
 const PORT = process.env.PORT || 5000;
 
-sequelize.sync({ alter:true })
+db.sequelize.authenticate()
     .then(() => {
         console.log('Server sudah berjalan Tuan');
 

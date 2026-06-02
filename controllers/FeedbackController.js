@@ -1,6 +1,8 @@
 const { Feedback } = require('../models');
 const response = require('../helpers/response');
 const { sequelize } = require('../models');
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
 
 class FeedbackController {
 
@@ -149,6 +151,72 @@ class FeedbackController {
 
             return res.status(200).json(response(200, 'Berhasil mengambil stats', {total, pending, approved, rejected}));
         } catch(error) {
+            return res.status(500).json(response(500, error.message));
+        }
+    }
+
+    static async exportPDF(req, res) {
+        try {
+            
+            const feedback = await Feedback.findAll();
+
+            const pdf = new PDFDocument();
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=feedback.pdf');
+
+            pdf.pipe(res);
+
+            pdf.fontSize(16).text('Laporan Feedback', { align: 'center' });
+            pdf.moveDown();
+
+            feedbacks.forEach((fb, i) => {
+                pdf.fontSize(12).text(
+                    `${i + 1}.${fb.message} | ${fb.status} | sender:${fb.senderId}`
+                );
+            });
+
+            pdf.end();
+
+        }catch(error) {
+            return res.status(500).json(response(error.message));
+        }
+    }
+
+    static async exportExcel(req, res) {
+        try {
+            
+            const feedbacks = await Feedback.findAll();
+
+            const workbook = new ExcelJS.Workbook();
+            const sheet = workbook.addWotkSheet('Feedback');
+
+            sheet.columns = [
+                { header: 'ID', key: 'id', width: 10 },
+                { header: 'Message', key: 'message', width: 30 },
+                { header: 'Status', key: 'status', width: 15 },
+                { header: 'Sender', key: 'sender', width: 10 },
+                { header: 'Receiver', key: 'receiver', width: 10}
+            ];
+
+            feedbacks.forEach(fb => {
+                sheet.addRow(fb.dataValues);
+            });
+
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=feedback.xlsx'
+            );
+
+            await workbook.xlsx.write(res);
+            res.end
+
+        } catch (error) {
             return res.status(500).json(response(500, error.message));
         }
     }
