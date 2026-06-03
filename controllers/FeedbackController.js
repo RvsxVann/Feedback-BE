@@ -1,6 +1,5 @@
-const { Feedback } = require('../models');
 const response = require('../helpers/response');
-const { sequelize } = require('../models');
+const { sequelize, Feedback, FeedbackLog, Category } = require('../models');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 
@@ -50,7 +49,13 @@ class FeedbackController {
             }
 
             const feedbacks = await Feedback.findAll({
-                where: whereClause
+                where: whereClause,
+                include: [
+                    {
+                        model: Category,
+                        attributes: ['id', 'name']
+                    }
+                ]
             });
 
             return res.status(200).json(
@@ -81,6 +86,16 @@ class FeedbackController {
                 return res.status(400).json(response(400, 'Feedback sudah di proses'))
             }
 
+            await FeedbackLog.create(
+                {
+                    feedbackId: feedbacks.id,
+                    teacherId: req.user.id,
+                    action: 'approved'
+                },
+                {
+                    transaction: t
+                }
+            )
             await feedbacks.update(
                 { status: 'approved' },
                 { transaction: t }
@@ -116,7 +131,7 @@ class FeedbackController {
 
             }
 
-            await feedback.update(
+            await feedbacks.update(
                 { status: 'rejected' },
                 { transaction: t }
             );
@@ -158,7 +173,7 @@ class FeedbackController {
     static async exportPDF(req, res) {
         try {
             
-            const feedback = await Feedback.findAll();
+            const feedbacks = await Feedback.findAll();
 
             const pdf = new PDFDocument();
 
@@ -178,8 +193,8 @@ class FeedbackController {
 
             pdf.end();
 
-        }catch(error) {
-            return res.status(500).json(response(error.message));
+        } catch (error) {
+            return res.status(500).json(response(500, error.message));
         }
     }
 
@@ -189,7 +204,7 @@ class FeedbackController {
             const feedbacks = await Feedback.findAll();
 
             const workbook = new ExcelJS.Workbook();
-            const sheet = workbook.addWotkSheet('Feedback');
+            const sheet = workbook.addWorksheet('Feedback');
 
             sheet.columns = [
                 { header: 'ID', key: 'id', width: 10 },
@@ -214,7 +229,7 @@ class FeedbackController {
             );
 
             await workbook.xlsx.write(res);
-            res.end
+            res.end();
 
         } catch (error) {
             return res.status(500).json(response(500, error.message));

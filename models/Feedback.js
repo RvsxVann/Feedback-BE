@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'categoryId',
         as: 'category',
       });
+
+      Feedback.hasMany(models.FeedbackLog, {
+        foreignKey: 'feedbackId',
+        as: 'logs',
+      });
     }
   }
 

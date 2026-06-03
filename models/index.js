@@ -18,39 +18,15 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// models
 db.User = require('./User')(sequelize, Sequelize.DataTypes);
 db.Feedback = require('./Feedback')(sequelize, Sequelize.DataTypes);
 db.Category = require('./Category')(sequelize, Sequelize.DataTypes);
+db.FeedbackLog = require('./Feedbacklog')(sequelize, Sequelize.DataTypes);
 
-db.User.hasMany(db.Feedback, {
-  foreignKey: 'senderId',
-  as: 'sentFeedbacks',
-});
-
-db.User.hasMany(db.Feedback, {
-  foreignKey: 'receiverId',
-  as: 'receiverFeedbacks',
-});
-
-db.Feedback.belongsTo(db.User, {
-  foreignKey: 'receiverId',
-  as: 'receiver',
-});
-
-db.Feedback.belongsTo(db.User, {
-  foreignKey: 'senderId',
-  as: 'sender',
-});
-
-db.Category.hasMany(db.Feedback, {
-  foreignKey: 'categoryId',
-  as: 'feedbacks',
-});
-
-db.Feedback.belongsTo(db.Category, {
-  foreignKey: 'categoryId',
-  as: 'category',
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName] && typeof db[modelName].associate === 'function') {
+    db[modelName].associate(db);
+  }
 });
 
 module.exports = db;

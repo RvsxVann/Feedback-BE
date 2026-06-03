@@ -10,17 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+
       Category.hasMany(models.Feedback, {
         foreignKey: 'categoryId'
-      })
+      });
+
+
+      
     }
   }
+
   Category.init({
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
   }, {
     sequelize,
     modelName: 'Category',
   });
+
   return Category;
 };
